@@ -1,0 +1,22 @@
+{
+  "name": "lkorponai/paginator",
+  "description": "An extendable paginator which supports a variety of data structures.",
+  "type": "library",
+  "keywords": ["paginator", "pagination", "array", "database"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Levente Korponai",
+      "role": "Developer"
+    }
+  ],
+  "require": {},
+  "require-dev": {
+    "phpunit/phpunit": "^5.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "lkorponai\\Paginator\\": "src"
+    }
+  }
+}
