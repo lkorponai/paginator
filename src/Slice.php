@@ -21,13 +21,20 @@ class Slice implements \Iterator
     /** @var int */
     private $itemsPerPage;
 
+    /** @var array */
+    private $range;
+
     public function __construct(array $items, $itemsPerPage, $totalNumberOfItems, $currentPage)
     {
+        $numberOfPages = intval(ceil($totalNumberOfItems / $itemsPerPage));
+        $currentPage = $currentPage <= $numberOfPages ? $currentPage : $numberOfPages;
+
         $this->items = $items;
-        $this->numberOfPages = intval(ceil($totalNumberOfItems / $itemsPerPage));
-        $this->currentPage = $currentPage <= $this->numberOfPages ? $currentPage : $this->numberOfPages;
+        $this->numberOfPages = $numberOfPages;
+        $this->currentPage = $currentPage;
         $this->totalNumberOfItems = $totalNumberOfItems;
         $this->itemsPerPage = $itemsPerPage;
+        $this->range = $this->calcRange($itemsPerPage, $totalNumberOfItems, $currentPage);
     }
 
     public function getNumberOfPages()
@@ -53,6 +60,21 @@ class Slice implements \Iterator
     public function getItemsPerPage()
     {
         return $this->itemsPerPage;
+    }
+
+    public function getRange()
+    {
+        return $this->range;
+    }
+
+    public function getTopRange()
+    {
+        return $this->range['to'];
+    }
+
+    public function getBottomRange()
+    {
+        return $this->range['from'];
     }
 
     public function current()
@@ -89,6 +111,17 @@ class Slice implements \Iterator
     public function isLast()
     {
         return $this->currentPage == $this->numberOfPages;
+    }
+
+    protected function calcRange($itemsPerPage, $totalNumberOfItems, $currentPage)
+    {
+        $highest = ($currentPage + 1 * $itemsPerPage) - 1;
+        $highest = $totalNumberOfItems > $highest ? $totalNumberOfItems : $highest;
+        $range = array(
+            'from' => $currentPage * $itemsPerPage,
+            'to' => $highest,
+        );
+        return $range;
     }
 
 }
