@@ -12,7 +12,7 @@ class ViewHelper
     private $slice;
 
     /** @var string */
-    private $url;
+    private $baseUrl;
 
     /** @var array */
     private $parameters;
@@ -23,7 +23,7 @@ class ViewHelper
     public function __construct(Slice $slice, $baseUrl, array $parameters = array(), $pagingParameter = 'page')
     {
         $this->slice = $slice;
-        $this->url = $baseUrl;
+        $this->baseUrl = $baseUrl;
         $this->parameters = $parameters;
         $this->pagingParameter = $pagingParameter;
     }
@@ -40,14 +40,27 @@ class ViewHelper
         ));
     }
 
-    /**
-     * todo make it possible to create sliding pagination (... in the middle)
-     */
-    public function getPages()
+    public function getPages($maxNumberOfItems = null)
     {
         $pages = array();
 
+        $delta = null !== $maxNumberOfItems ? ($maxNumberOfItems -1) / 2 : null;
+
         for($i = 1; $i <= $this->slice->getNumberOfPages(); $i++){
+            if(null !== $delta){
+                if($i == ceil($delta)+1){
+                    $pages[] = array(
+                        'url' => null,
+                        'page' => null,
+                    );
+                    continue;
+                }
+
+                if($i > ceil($delta) && $i <= $this->slice->getNumberOfPages() - floor($delta)){
+                    continue;
+                }
+            }
+
             $pages[] = array(
                 'url' => $this->getUrl($i),
                 'page' => $i,
@@ -118,15 +131,35 @@ class ViewHelper
         $parameters = $this->parameters;
 
         if(null === $this->pagingParameter){
-            $url = $this->url.'/'.$pageNumber;
+            $url = rtrim($this->baseUrl, '/').'/'.$pageNumber;
         }else{
             $parameters[$this->pagingParameter] = $pageNumber;
-            $url = $this->url;
+            $url = $this->baseUrl;
         }
 
         $url .= $parameters ? '?'.http_build_query($parameters) : '';
 
         return $url;
+    }
+
+    public function getSlice()
+    {
+        return $this->slice;
+    }
+
+    public function getBaseUrl()
+    {
+        return $this->baseUrl;
+    }
+
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    public function getPagingParameter()
+    {
+        return $this->pagingParameter;
     }
 
 }

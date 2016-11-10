@@ -12,11 +12,13 @@ class SliceTest extends \PHPUnit_Framework_TestCase
     public function testSlice()
     {
         $slice = new Slice(range(1, 30), 6, 50, 1);
-        $this->assertSlice($slice, 9, range(1, 30), 6, 50, 1, true, false);
+        $this->assertSlice($slice, 9, range(1, 30), 6, 50, 1, true, false, array('from' => 1, 'to' => 6));
+
+        $slice = new Slice(range(1, 30), 6, 50, 2);
+        $this->assertSlice($slice, 9, range(1, 30), 6, 50, 2, false, false, array('from' => 6, 'to' => 12));
 
         $slice = new Slice(range(1, 30), 30, 30, 1);
-        $this->assertSlice($slice, 1, range(1, 30), 30, 30, 1, true, true);
-
+        $this->assertSlice($slice, 1, range(1, 30), 30, 30, 1, true, true, array('from' => 1, 'to' => 30));
     }
 
     public function testTraversability()
@@ -30,7 +32,7 @@ class SliceTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    protected function assertSlice(Slice $slice, $numberOfPages, $items, $itemsPerPage, $totalNumberOfItems, $currentPage, $first, $last)
+    protected function assertSlice(Slice $slice, $numberOfPages, $items, $itemsPerPage, $totalNumberOfItems, $currentPage, $first, $last, $range)
     {
         $this->assertEquals($numberOfPages, $slice->getNumberOfPages());
         $this->assertEquals($items, $slice->getItems());
@@ -39,6 +41,7 @@ class SliceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($currentPage, $slice->getCurrentPage());
         $this->assertEquals($first, $slice->isFirst());
         $this->assertEquals($last, $slice->isLast());
+        $this->assertEquals($range, $slice->getRange());
     }
 
 }

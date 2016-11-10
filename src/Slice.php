@@ -115,10 +115,13 @@ class Slice implements \Iterator
 
     protected function calcRange($itemsPerPage, $totalNumberOfItems, $currentPage)
     {
-        $highest = ($currentPage + 1 * $itemsPerPage) - 1;
-        $highest = $totalNumberOfItems > $highest ? $totalNumberOfItems : $highest;
+        $highest = $currentPage * $itemsPerPage;
+        $highest = $highest > $totalNumberOfItems ? $totalNumberOfItems : $highest;
+        $lowest = ($currentPage - 1) * $itemsPerPage;
+        $lowest = $lowest == 0 ? 1 : $lowest;
+
         $range = array(
-            'from' => $currentPage * $itemsPerPage,
+            'from' => $lowest,
             'to' => $highest,
         );
         return $range;
